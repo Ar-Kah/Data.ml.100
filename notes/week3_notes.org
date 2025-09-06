@@ -1,7 +1,5 @@
 #+title: Week3 Notes
 
-* Week 3 exercise notes
-
 The Idea of the exercise was to use a training data to find the closest
 neighbor for some test images. The method for training was 1NN.
 
