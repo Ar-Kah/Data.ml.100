@@ -1,0 +1,22 @@
+#+title: Week3 Notes
+
+* Week 3 exercise notes
+
+The Idea of the exercise was to use a training data to find the closest
+neighbor for some test images. The method for training was 1NN.
+
+** learning
+
+First I implemented a very slow but easy to understand version of the problem.
+I made a for loop that goes over all the test images and calculates the distance
+to all of the training samples. at the same time I comapred the distaces to the
+current min distance and updated the min distance accordingly.
+
+*** Distance calculation
+
+How I first calculated the distance was by using the numpy.linalg.norm method,
+but this proved problematic.
+
+Later after consulting chatgpt for the problem it said to calculate the distance
+in smaller batches and using a different distance calculation method. The method
+used a vectorized Euclidean distance.
