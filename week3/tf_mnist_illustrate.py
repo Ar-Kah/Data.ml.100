@@ -35,4 +35,3 @@ for i in range(x_test.shape[0]):
         true_class.append(y_test[i])
         predicted_class.append(0)
         plt.pause(1)
-
