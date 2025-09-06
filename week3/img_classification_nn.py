@@ -12,7 +12,7 @@ def my_cl_acc(pred, gt):
 def my_1nn_batch(x_train, y_train, x_test, batch_size=200):
     """
     Fully vectorized 1-NN classifier with batching to save memory.
-
+    
     x_train: (N_train, 28,28) or (N_train, 784)
     y_train: (N_train,)
     x_test:  (N_test, 28,28) or (N_test, 784)
