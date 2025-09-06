@@ -6,15 +6,6 @@ import matplotlib.pyplot as plt
 
 from random import random
 
-def my_cl_acc(pred, gt):
-    how_many_correct = 0
-    for i in range(len(pred)):
-        if pred[i] == gt[i]:
-            how_many_correct += 1
-
-    return 100 * (how_many_correct / len(pred))
-
-
 # Read MNIST data from dumped pickle
 data_fname = 'mnist_fashion.pkl'
 
@@ -45,6 +36,3 @@ for i in range(x_test.shape[0]):
         predicted_class.append(0)
         plt.pause(1)
 
-
-percent = my_cl_acc(predicted_class, true_class)
-print(percent)
