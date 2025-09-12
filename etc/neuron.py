@@ -1,54 +1,106 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
-# Me trying to implement a neural network from scratch
-# this neural network will be for regression problems
 
-if __name__ == '__main__':
 
-    class NeuralNetwork:
+class NeuralNetwork:
+    def __init__(self, learning_rate, dimentions):
+        self.weights = np.empty(dimentions)
+        for dimention in range(dimentions):
+            self.weights[dimention] = np.random.randn()
+        self.bias = np.random.randn()
+        self.learning_rate = learning_rate
 
-        def __init__(self, learning_rate):
-            self.bias = -1
-            self.weights = np.array([np.random.randn(), np.random.randn()])
-            self.learning_rate = learning_rate
+    def _relu(self, x):
+        return np.maximum(0, x)
 
-        def sigmoid(self, x):
-            return 1 / (1 + np.exp(-x))
+    def _relu_deriv(self, x):
+        return (x > 0).astype(float)
 
-        def _sigmoid_deriv(self, x):
-            return self.sigmoid(x) * (1 - self.sigmoid(x))
+    def predict(self, input_vector):
+        layer_1 = np.dot(input_vector, self.weights) + self.bias
+        layer_2 = self._relu(layer_1)
+        prediction = layer_2
+        return prediction
 
-        def predict(self, input_vector):
-            layer1 = np.dot(input_vector, self.weights) + self.bias
-            layer2 = self.sigmoid(layer1)
-            prediction = layer2
-            return prediction
+    def _compute_gradients(self, input_vector, target):
+        layer_1 = np.dot(input_vector, self.weights) + self.bias
+        layer_2 = self._relu_deriv(layer_1)
+        prediction = layer_2
 
-        def compute_gradinats(self, input_vector, target):
-            layer1 = np.dot(input_vector, self.weights) + self.bias
-            layer2 = self.sigmoid(layer1)
-            prediction = layer2
+        derror_dprediction = 2 * (prediction - target)
+        dprediction_dlayer1 = self._relu_deriv(layer_1)
+        dlayer1_dbias = 1
+        dlayer1_dweights = (0 * self.weights) + (1 * input_vector)
 
-            derror_dprediction = 2 * (prediction - target)
-            dprediction_dlayer1 = self._sigmoid_deriv(layer1)
-            dlayer1_bias = 1
-            dlayer1_dweights = (0 * self.weights) + (1 * input_vector)
+        derror_dbias = (
+            derror_dprediction * dprediction_dlayer1 * dlayer1_dbias
+        )
+        derror_dweights = (
+            derror_dprediction * dprediction_dlayer1 * dlayer1_dweights
+        )
 
-            derror_bias = (
-                derror_dprediction * dprediction_dlayer1 * dlayer1_bias
+        return derror_dbias, derror_dweights
+
+    def _update_parameters(self, derror_dbias, derror_dweights):
+        self.bias = self.bias - (derror_dbias * self.learning_rate)
+        self.weights = self.weights - (
+            derror_dweights * self.learning_rate
+        )
+
+
+    def train(self, input_vectors, targets, iterations):
+        cumulative_errors = []
+        for current_iteration in range(iterations):
+
+            input_vector = input_vectors[current_iteration]
+            target = targets[current_iteration]
+
+            # Compute the gradients and update the weights
+            derror_dbias, derror_dweights = self._compute_gradients(
+                input_vector, target
             )
-            derror_dweights = (
-                derror_dprediction * dprediction_dlayer1 * dlayer1_dweights
-            )
 
-            return derror_bias, derror_dweights
+            self._update_parameters(derror_dbias, derror_dweights)
 
-        def _update_parameters(self, derror_dbias, derror_dweights):
-            self.bias = self.bias - (derror_dbias * self.learning_rate)
-            self.weights = self.weights - (derror_dweights * self.learning_rate)
+            # Measure the cumulative error for all the instances
+            if current_iteration % 100 == 0:
+                cumulative_error = 0
+                # Loop through all the instances to measure the error
+                for data_instance_index in range(len(input_vectors)):
+                    data_point = input_vectors[data_instance_index]
+                    target = targets[data_instance_index]
 
-    learning_rate = 0.1
+                    prediction = self.predict(data_point)
+                    error = np.square(prediction - target)
 
-    neural_network = NeuralNetwork(learning_rate)
+                    cumulative_error = cumulative_error + error
+                cumulative_errors.append(cumulative_error)
 
-    print(neural_network.predict([1.72, 1.23]))
+        return cumulative_errors
+
+# input_vectors = np.array(
+#     [
+#         [3, 1.5],
+#         [2, 1],
+#         [4, 1.5],
+#         [3, 4],
+#         [3.5, 0.5],
+#         [2, 0.5],
+#         [5.5, 1],
+#         [1, 1],
+#     ]
+# )
+
+# targets = np.array([0, 1, 0, 1, 0, 1, 1, 0])
+
+# learning_rate = 0.1
+
+# neural_network = NeuralNetwork(learning_rate)
+
+# training_error = neural_network.train(input_vectors, targets, 10000)
+
+# plt.plot(training_error)
+# plt.xlabel("Iterations")
+# plt.ylabel("Error for all training instances")
+# plt.show()
