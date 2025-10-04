@@ -29,7 +29,7 @@ class PIDController:
         return output
 
 env = gym.make("CartPole-v1", render_mode="human")
-pid = PIDController(Kp=10, Ki=0.1, Kd=0.1, setpoint=0.1)
+pid = PIDController(Kp=1, Ki=0.01, Kd=0.05, setpoint=0.0)
 
 obs, info = env.reset()
 pid.reset()
@@ -43,7 +43,7 @@ while not done:
     pole_angle = obs[2]
     pole_angle_dot = obs[3]
     dt = 0.02  # CartPole has a fixed 50Hz physics step
-    output = pid(pole_angle, dt)
+    output = -pid(pole_angle, dt)
     action = 0 if output < 0 else 1  # 0 = left, 1 = right
     obs, reward, terminated, truncated, info = env.step(action)
     done = terminated or truncated
